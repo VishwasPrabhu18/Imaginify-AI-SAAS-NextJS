@@ -4,7 +4,7 @@ const protectedRoutes = createRouteMatcher([
   "/",
   "/credits",
   "/profile",
-  "/transformation(.*)",
+  "/transformations(.*)",
 ]);
 
 export default clerkMiddleware((auth, req) => {
