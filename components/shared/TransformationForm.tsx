@@ -23,7 +23,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { aspectRatioOptions, creditFee, defaultValues, transformationTypes } from "@/constants"
 import { CustomField } from "./CustomField"
-import { useState, useTransition } from "react"
+import { useEffect, useState, useTransition } from "react"
 import { AspectRatioKey, debounce, deepMergeObjects } from "@/lib/utils"
 import { updateCredits } from "@/lib/actions/user.actions"
 import MediaUploader from "./MediaUploader"
@@ -178,6 +178,12 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
     });
   };
 
+  useEffect(() => {
+    if (image && (type === "restore" || type === "removeBackground")) {
+      setNewTransformation(transformationType.config);
+    }
+  }, [image, transformationType.config, type]);
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -226,7 +232,18 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
                 type === "remove" ? "Object to Remove" : "Object to Recolor"
               }
               className="w-full"
-              render={({ field }) => <Input value={field.value} className="input-field" onChange={(e) => onInputChangeHandler("prompt", e.target.value, type, field.onChange)} />}
+              render={({ field }) => (
+                <Input
+                  value={field.value}
+                  className="input-field"
+                  onChange={(e) => onInputChangeHandler(
+                    "prompt",
+                    e.target.value,
+                    type,
+                    field.onChange
+                  )}
+                />
+              )}
             />
 
             {type === "recolor" && (
@@ -235,7 +252,18 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
                 name="color"
                 formLabel="Replacement Color"
                 className="w-full"
-                render={({ field }) => <Input value={field.value} className="input-field" onChange={(e) => onInputChangeHandler("color", e.target.value, "recolor", field.onChange)} />}
+                render={({ field }) => (
+                  <Input
+                    value={field.value}
+                    className="input-field"
+                    onChange={(e) => onInputChangeHandler(
+                      "color",
+                      e.target.value,
+                      "recolor",
+                      field.onChange
+                    )}
+                  />
+                )}
               />
             )}
           </div>
@@ -271,7 +299,7 @@ const TransformationForm = ({ action, data = null, type, userId, creditBalance, 
           <Button
             type="button"
             className="submit-button capitalize"
-            disabled={isTransforming || newTransformation == null}
+            disabled={isTransforming || newTransformation === null}
             onClick={onTrnasformHandler}
           >
             {
